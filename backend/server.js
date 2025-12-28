@@ -18,7 +18,7 @@ app.use(securityHeaders);
 app.use('/api', generalRateLimiter);
 
 // Middleware
-app.use(cors());
+
 app.use(cors({
   origin: '*', // Allows Vercel to access Railway
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
