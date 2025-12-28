@@ -4,6 +4,13 @@ const API_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : 'http://localhost:5000/api';
 
+// Warn if using localhost in production
+if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && API_URL.includes('localhost')) {
+  console.error('⚠️ WARNING: API URL is set to localhost in production!');
+  console.error('Please set VITE_API_URL environment variable in Vercel and redeploy.');
+  console.error('Current API URL:', API_URL);
+}
+
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
