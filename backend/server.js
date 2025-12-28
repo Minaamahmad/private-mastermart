@@ -24,7 +24,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // SERVE STATIC IMAGES - This allows frontend to see uploaded files
 // Using process.cwd() ensures it finds the folder on Railway's environment
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'), {
+  setHeaders: (res) => {
+    res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
 
 // Routes
 app.use('/api/products', require('./routes/products'));
