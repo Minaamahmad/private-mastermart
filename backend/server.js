@@ -67,12 +67,17 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check endpoint
+// Health check endpoint (must be fast for Railway health checks)
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  // Quick response - don't block on MongoDB check
+  const mongoStatus = mongoose.connection.readyState;
+  const status = mongoStatus === 1 ? 'ok' : 'degraded';
+  
+  res.status(mongoStatus === 1 ? 200 : 503).json({ 
+    status,
     timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    mongodb: mongoStatus === 1 ? 'connected' : 'disconnected',
+    uptime: process.uptime()
   });
 });
 
@@ -101,10 +106,68 @@ mongoose.connect(MONGODB_URI, {
   console.error('💡 Make sure MONGODB_URI is set correctly in Railway environment variables');
 });
 
+// Error handling middleware (must be after all routes)
+app.use((err, req, res, next) => {
+  console.error('❌ Error:', err);
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+  });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0'; // Railway requires 0.0.0.0
+
+// Start server
+const server = app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
   console.log(`🌐 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔌 API endpoint: http://localhost:${PORT}/api`);
+  console.log(`📡 Health check: http://${HOST}:${PORT}/health`);
+  console.log(`🔌 API endpoint: http://${HOST}:${PORT}/api`);
+  console.log(`✅ Server is ready to accept connections`);
+});
+
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  console.log('⚠️  SIGTERM received, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ HTTP server closed');
+    mongoose.connection.close(false, () => {
+      console.log('✅ MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('⚠️  SIGINT received, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ HTTP server closed');
+    mongoose.connection.close(false, () => {
+      console.log('✅ MongoDB connection closed');
+      process.exit(0);
+    });
+  });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Promise Rejection:', err);
+  // Don't exit the process, just log the error
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  // Gracefully shutdown
+  server.close(() => {
+    mongoose.connection.close(false, () => {
+      process.exit(1);
+    });
+  });
 });
