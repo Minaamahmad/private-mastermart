@@ -49,6 +49,24 @@ app.use('/uploads', express.static(uploadsDir, {
   }
 }));
 
+// Root endpoint - API information
+app.get('/', (req, res) => {
+  res.json({
+    message: 'MasterMart E-commerce API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      products: '/api/products',
+      orders: '/api/orders',
+      users: '/api/users',
+      uploads: '/uploads'
+    },
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
