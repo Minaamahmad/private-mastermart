@@ -113,7 +113,11 @@ const HomePage = () => {
                   <Link to={`/products/${product._id}`} className="card-link">
                     <div className="card-image-wrapper">
                       {product.image ? (
-                        <img src={getImageUrl(product.image)} alt={product.name} />
+                        <img
+  src={`http://localhost:5000${product.image}`}
+  alt={product.name}
+/>
+
                       ) : (
                         <div style={{ 
                           position: 'absolute', 
