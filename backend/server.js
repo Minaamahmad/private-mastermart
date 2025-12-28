@@ -1,46 +1,20 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return 'https://via.placeholder.com/150'; // Fallback
+  
+  // If it's already a full URL (like from Cloudinary or external), use it
+  if (imagePath.startsWith('http')) return imagePath;
 
-const { securityHeaders, generalRateLimiter } = require('./middleware/security');
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  
+  // Ensure we don't double up on "/uploads"
+  // If the DB path is "uploads/img.jpg", we just need BASE_URL/img.jpg
+  // If the DB path is "img.jpg", we need BASE_URL/uploads/img.jpg
+  const cleanPath = imagePath.startsWith('uploads/') 
+    ? imagePath 
+    : `uploads/${imagePath}`;
 
-const app = express();
+  return `${API_BASE_URL}/${cleanPath}`;
+};
 
-// Trust proxy for accurate IP addresses (important for rate limiting)
-app.set('trust proxy', 1);
-
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-
-// Security middleware (apply before other middleware)
-app.use(securityHeaders);
-
-// General rate limiting
-app.use('/api', generalRateLimiter);
-
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Routes
-app.use('/api/products', require('./routes/products'));
-app.use('/api/orders', require('./routes/orders'));
-app.use('/api/users', require('./routes/users'));
-
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.error('MongoDB Connection Error:', err));
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
+// Use it in your JSX like this:
+<img src={getImageUrl(product.image)} alt={product.name} />
