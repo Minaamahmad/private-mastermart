@@ -74,15 +74,24 @@
 - Try logging out and back in
 
 ### "Insufficient permissions" error
-- Go to **Roles** → **Admin** → **Permissions**
-- Make sure all permissions are assigned:
-  - `create:products`
-  - `update:products`
-  - `delete:products`
-  - `read:products`
-  - `update:users`
-  - `read:orders` (if you added it)
-  - `update:orders` (if you added it)
+**This is the most common issue!** See `AUTH0_PERMISSIONS_FIX.md` for detailed step-by-step instructions.
+
+**Quick checklist:**
+1. ✅ API created in Auth0 with RBAC enabled
+2. ✅ "Add Permissions in the Access Token" enabled on API
+3. ✅ All permissions created in API
+4. ✅ Permissions assigned to Admin role
+5. ✅ `AUTH0_AUDIENCE` set to API identifier (NOT client ID)
+6. ✅ Application authorized to use the API
+
+**Required permissions:**
+- `create:products`
+- `update:products`
+- `delete:products`
+- `read:products`
+- `update:users`
+- `read:orders`
+- `update:orders`
 
 ### "Google login not working"
 - Check that Google connection is enabled

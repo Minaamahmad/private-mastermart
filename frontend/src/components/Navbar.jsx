@@ -13,13 +13,6 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      // Check for old admin token (legacy support)
-      const adminToken = localStorage.getItem('adminToken');
-      if (adminToken) {
-        setIsAdmin(true);
-        return;
-      }
-
       // Check for Auth0 admin permissions
       if (isAuthenticated) {
         try {
@@ -74,12 +67,6 @@ const Navbar = () => {
     };
   }, [location, isAuthenticated, getAccessTokenSilently]); // Re-check when route or auth changes
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    setIsAdmin(false);
-    window.location.href = '/';
-  };
-
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -92,7 +79,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">
-          <h2>E-Store</h2>
+          <h2>Master mart</h2>
         </Link>
         <form onSubmit={handleSearch} className="navbar-search">
           <input
@@ -104,8 +91,8 @@ const Navbar = () => {
         </form>
         <ul className="navbar-menu">
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/products">Products</Link></li>
-          <li><Link to="/cart">Cart</Link></li>
+          
+         
           {isAuthenticated && (
             <li>
               <span className="user-info">
@@ -147,9 +134,14 @@ const Navbar = () => {
           {isAdmin && (
             <>
               <li><Link to="/admin/dashboard">Dashboard</Link></li>
-              <li><Link to="/admin/products">Products</Link></li>
-              <li><Link to="/admin/orders">Orders</Link></li>
-              <li><button onClick={handleLogout} className="btn-logout">Admin Logout</button></li>
+             
+            </>
+          )}
+           {!isAdmin && (
+            <>
+             
+             <li><Link to="/products">Products</Link></li>
+          <li><Link to="/cart">Cart</Link></li>
             </>
           )}
         </ul>

@@ -22,7 +22,7 @@ A simple e-commerce platform for small businesses with Cash on Delivery function
 - **Frontend:** React + Vite
 - **Backend:** Node.js + Express
 - **Database:** MongoDB
-- **Authentication:** JWT
+- **Authentication:** Auth0 (Google OAuth for users, Admin role-based permissions)
 
 ## Setup Instructions
 
@@ -40,9 +40,11 @@ npm install
 
 3. Create a `.env` file in the backend directory:
 ```
-MONGODB_URI=mongodb:
-JWT_SECRET=your_secret_key_here_change_in_production
+MONGODB_URI=mongodb://localhost:27017/ecommerce
 PORT=5000
+AUTH0_DOMAIN=your-domain.auth0.com
+AUTH0_CLIENT_ID=your_client_id
+AUTH0_AUDIENCE=your_client_id
 ```
 
 4. Start MongoDB (make sure MongoDB is running on your system)
@@ -66,9 +68,12 @@ cd frontend
 npm install
 ```
 
-3. Create a `.env` file in the frontend directory (optional):
+3. Create a `.env` file in the frontend directory:
 ```
-VITE_API_URL=
+VITE_API_URL=http://localhost:5000/api
+VITE_AUTH0_DOMAIN=your-domain.auth0.com
+VITE_AUTH0_CLIENT_ID=your_client_id
+VITE_AUTH0_REDIRECT_URI=http://localhost:3000/callback
 ```
 
 4. Start the development server:
@@ -78,19 +83,23 @@ npm run dev
 
 The frontend will run on `
 
-## Initial Admin Setup
+## Admin Setup
 
-To create an admin account, you can use the registration endpoint:
+Admin access is managed through Auth0. To set up an admin:
 
-```bash
-curl -X POST
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"yourpassword"}'
-```
+1. Configure Auth0 with Google OAuth
+2. Create an Admin role in Auth0
+3. Assign the following permissions to the Admin role:
+   - `create:products`
+   - `update:products`
+   - `delete:products`
+   - `read:products`
+   - `update:users`
+   - `read:orders`
+   - `update:orders`
+4. Assign the Admin role to your Google account in Auth0
 
-Or use Postman/Thunder Client to make the request.
-
-**Note:** In production, you should remove or protect the registration endpoint and create admin accounts directly in the database.
+See `GOOGLE_ADMIN_SETUP.md` for detailed instructions.
 
 ## Project Structure
 
@@ -126,10 +135,11 @@ Or use Postman/Thunder Client to make the request.
 - `GET /api/orders/:id` - Get single order (admin)
 - `PUT /api/orders/:id/status` - Update order status (admin)
 
-### Auth
-- `POST /api/auth/login` - Admin login
-- `POST /api/auth/register` - Admin registration
-- `GET /api/auth/verify` - Verify token
+### Users (Auth0)
+- `GET /api/users/me` - Get current user profile
+- `PUT /api/users/me` - Update user profile
+- `POST /api/users/sync` - Sync user from Auth0
+- `GET /api/users/me/orders` - Get user orders
 
 ## License
 

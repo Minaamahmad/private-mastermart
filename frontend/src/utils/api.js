@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
+const API_URL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : 'http://localhost:5000/api';
 const api = axios.create({
   baseURL: API_URL,
   headers: {
@@ -16,13 +17,9 @@ export const setAuth0TokenGetter = (getter) => {
   auth0TokenGetter = getter;
 };
 
-// Add token to requests if available (supports both admin and Auth0 tokens)
+// Add Auth0 token to requests if available
 api.interceptors.request.use(async (config) => {
-  // Priority: Admin token first, then Auth0 token
-  const adminToken = localStorage.getItem('adminToken');
-  if (adminToken) {
-    config.headers.Authorization = `Bearer ${adminToken}`;
-  } else if (auth0TokenGetter) {
+  if (auth0TokenGetter) {
     try {
       const token = await auth0TokenGetter();
       if (token) {
@@ -41,11 +38,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token is invalid or expired
-      localStorage.removeItem('adminToken');
-      // Only redirect if not already on login page
-      if (window.location.pathname !== '/admin/login') {
-        window.location.href = '/admin/login';
+      // Token is invalid or expired - redirect to home
+      // Auth0 will handle re-authentication if needed
+      if (!window.location.pathname.startsWith('/admin')) {
+        // Only redirect non-admin pages to home
+        // Admin pages are protected by PrivateRoute which handles Auth0
       }
     }
     return Promise.reject(error);
@@ -96,19 +93,6 @@ export const getOrder = (id) => {
 
 export const updateOrderStatus = (id, status) => {
   return api.put(`/orders/${id}/status`, { status });
-};
-
-// Auth API
-export const adminLogin = (credentials) => {
-  return api.post('/auth/login', credentials);
-};
-
-export const adminRegister = (credentials) => {
-  return api.post('/auth/register', credentials);
-};
-
-export const verifyToken = () => {
-  return api.get('/auth/verify');
 };
 
 // User API (Auth0)

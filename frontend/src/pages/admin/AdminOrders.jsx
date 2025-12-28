@@ -17,12 +17,33 @@ const AdminOrders = () => {
       setOrders(response.data);
     } catch (err) {
       console.error('Error fetching orders:', err);
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to load orders';
+      const errorData = err.response?.data || {};
+      let errorMessage = errorData.message || err.message || 'Failed to load orders';
+      
+      // If it's a permissions error, show helpful message
+      if (err.response?.status === 403) {
+        errorMessage = `🔒 Permission Error: ${errorMessage}`;
+        if (errorData.required) {
+          errorMessage += `\n\n📋 Required permissions: ${errorData.required.join(', ')}`;
+        }
+        if (errorData.userPermissions) {
+          errorMessage += `\n\n✅ Your permissions: ${errorData.userPermissions.length > 0 ? errorData.userPermissions.join(', ') : 'None found in token'}`;
+        }
+        if (errorData.hint) {
+          errorMessage += `\n\n💡 ${errorData.hint}`;
+        }
+        errorMessage += `\n\n📖 See AUTH0_PERMISSIONS_FIX.md for detailed setup instructions.`;
+        console.error('Permission details:', {
+          required: errorData.required,
+          userPermissions: errorData.userPermissions,
+          hint: errorData.hint
+        });
+      }
+      
       setError(errorMessage);
-      // If it's an auth error, redirect to login
+      // If it's an auth error, redirect to home (Auth0 will handle auth)
       if (err.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login';
+        window.location.href = '/';
       }
     } finally {
       setLoading(false);
@@ -38,10 +59,9 @@ const AdminOrders = () => {
       console.error('Error updating order status:', err);
       const errorMessage = err.response?.data?.message || err.message || 'Failed to update order status';
       setError(errorMessage);
-      // If it's an auth error, redirect to login
+      // If it's an auth error, redirect to home (Auth0 will handle auth)
       if (err.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login';
+        window.location.href = '/';
       }
     }
   };
@@ -73,14 +93,33 @@ const AdminOrders = () => {
       </div>
       
       {error && (
-        <div className="error" style={{ marginBottom: '20px' }}>
+        <div className="error" style={{ marginBottom: '20px', whiteSpace: 'pre-line' }}>
           {error}
-          <button 
-            onClick={() => setError(null)} 
-            style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '12px' }}
-          >
-            Dismiss
-          </button>
+          <div style={{ marginTop: '15px' }}>
+            <button 
+              onClick={() => setError(null)} 
+              style={{ marginRight: '10px', padding: '8px 16px', fontSize: '14px' }}
+            >
+              Dismiss
+            </button>
+            <a 
+              href="https://github.com/your-repo/blob/main/AUTH0_PERMISSIONS_FIX.md" 
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                padding: '8px 16px', 
+                fontSize: '14px',
+                background: '#007bff',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '4px',
+                display: 'inline-block',
+                marginLeft: '10px'
+              }}
+            >
+              📖 View Setup Guide
+            </a>
+          </div>
         </div>
       )}
       

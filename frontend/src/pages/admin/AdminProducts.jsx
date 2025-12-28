@@ -35,8 +35,8 @@ const AdminProducts = () => {
       const errorMessage = err.response?.data?.message || err.message || 'Failed to load products';
       setError(errorMessage);
       if (err.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login';
+        // Auth0 will handle redirect via PrivateRoute
+        window.location.href = '/';
       }
     } finally {
       setLoading(false);
@@ -111,8 +111,8 @@ const AdminProducts = () => {
       const errorMessage = err.response?.data?.message || err.message || 'Failed to save product';
       setError(errorMessage);
       if (err.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login';
+        // Auth0 will handle redirect via PrivateRoute
+        window.location.href = '/';
       }
     } finally {
       setSubmitting(false);
@@ -147,8 +147,8 @@ const AdminProducts = () => {
       const errorMessage = err.response?.data?.message || err.message || 'Failed to delete product';
       setError(errorMessage);
       if (err.response?.status === 401) {
-        localStorage.removeItem('adminToken');
-        window.location.href = '/admin/login';
+        // Auth0 will handle redirect via PrivateRoute
+        window.location.href = '/';
       }
     }
   };

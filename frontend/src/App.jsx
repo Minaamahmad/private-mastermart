@@ -12,7 +12,6 @@ import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import CallbackPage from './pages/CallbackPage';
 
 // Admin Pages
-import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
@@ -37,11 +36,7 @@ function App() {
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmationPage />} />
           <Route path="/callback" element={<CallbackPage />} />
           
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          {/* Alternative secret route for admin access - easier to remember */}
-          <Route path="/manage" element={<AdminLogin />} />
-          <Route path="/cp" element={<AdminLogin />} />
+          {/* Admin Routes - Protected by Auth0 */}
           <Route
             path="/admin/dashboard"
             element={

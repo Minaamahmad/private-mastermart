@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { verifyToken } from '../utils/api';
 
 const PrivateRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -10,20 +9,6 @@ const PrivateRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Check for old admin token (legacy support)
-      const adminToken = localStorage.getItem('adminToken');
-      if (adminToken) {
-        try {
-          await verifyToken();
-          setIsAuthenticated(true);
-          setLoading(false);
-          return;
-        } catch (error) {
-          // Old token invalid, remove it
-          localStorage.removeItem('adminToken');
-        }
-      }
-
       // Wait for Auth0 to finish loading
       if (auth0Loading) {
         return;

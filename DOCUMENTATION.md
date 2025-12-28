@@ -435,10 +435,7 @@ VITE_AUTH0_REDIRECT_URI=http://localhost:3000/callback
 
 ### Auth (Admin)
 
-- `POST /api/auth/login` - Admin login
-- `POST /api/auth/register` - Admin register
-- `GET /api/auth/verify` - Verify admin token
-- `POST /api/auth/refresh` - Refresh admin token
+Admin authentication is handled through Auth0. Users with admin permissions (assigned via Auth0 roles) can access admin routes. See `GOOGLE_ADMIN_SETUP.md` for setup instructions.
 
 ---
 
@@ -580,7 +577,7 @@ project/
 │   │   ├── Product.js
 │   │   ├── Order.js
 │   │   ├── User.js
-│   │   └── Admin.js
+│   │   └── (Admin model removed - using Auth0 roles)
 │   ├── routes/
 │   │   ├── products.js
 │   │   ├── orders.js

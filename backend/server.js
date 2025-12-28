@@ -11,6 +11,8 @@ const app = express();
 // Trust proxy for accurate IP addresses (important for rate limiting)
 app.set('trust proxy', 1);
 
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // Security middleware (apply before other middleware)
 app.use(securityHeaders);
 
@@ -26,7 +28,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
-app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 
 // MongoDB Connection

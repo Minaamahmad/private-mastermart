@@ -124,10 +124,21 @@ const checkPermissions = (...requiredPermissions) => {
     );
 
     if (!hasPermission) {
+      console.error('Permission check failed:', {
+        required: requiredPermissions,
+        userPermissions: userPermissions,
+        tokenPermissions: req.user.permissions,
+        tokenScope: req.user.scope,
+        userId: req.user.sub,
+        audience: req.user.aud
+      });
       return res.status(403).json({ 
         message: 'Insufficient permissions',
         required: requiredPermissions,
-        userPermissions: userPermissions
+        userPermissions: userPermissions,
+        tokenHasPermissions: req.user.permissions || [],
+        tokenScope: req.user.scope || '',
+        hint: 'Make sure: 1) An API is created in Auth0, 2) RBAC is enabled on the API, 3) "Add Permissions in the Access Token" is enabled, 4) Permissions are assigned to your Admin role, 5) Your application is authorized to use the API, 6) AUTH0_AUDIENCE is set to your API identifier (not client ID). See AUTH0_PERMISSIONS_FIX.md for detailed instructions.'
       });
     }
 
