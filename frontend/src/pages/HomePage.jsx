@@ -113,10 +113,13 @@ const HomePage = () => {
                   <Link to={`/products/${product._id}`} className="card-link">
                     <div className="card-image-wrapper">
                       {product.image ? (
-                        <img
-  src={`http://localhost:5000${product.image}`}
-  alt={product.name}
-/>
+                       <img 
+                       src={product.image.startsWith('http') 
+                         ? product.image 
+                         : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${product.image.startsWith('uploads/') ? '' : 'uploads/'}${product.image.replace('http://localhost:5000/', '')}`
+                       } 
+                       alt={product.name} 
+                     />
 
                       ) : (
                         <div style={{ 
