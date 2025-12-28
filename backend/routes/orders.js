@@ -14,10 +14,13 @@ router.post('/', optionalAuth, async (req, res) => {
   try {
     const { customerName, customerPhone, customerAddress, customerEmail, items } = req.body;
 
-    // Validate items array
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Order must have at least one item' });
     }
+    router.put('/:id/status', verifyAuth0Token, checkPermissions('update:orders'), validateId('id'), async (req, res) => {
+  // ...
+});
+
 
     let totalAmount = 0;
     const orderItems = [];
@@ -26,9 +29,7 @@ router.post('/', optionalAuth, async (req, res) => {
     // If user is authenticated, get user info
     if (req.user) {
       const user = await findUserByAuth0Id(req.user.sub);
-      if (user) {
-        userId = user._id;
-      }
+      if (user) userId = user._id;
     }
 
     // Validate items and calculate total
@@ -38,9 +39,7 @@ router.post('/', optionalAuth, async (req, res) => {
       }
 
       const product = await Product.findById(item.productId);
-      if (!product) {
-        return handleNotFound(res, `Product ${item.productId}`);
-      }
+      if (!product) return handleNotFound(res, `Product ${item.productId}`);
       if (product.stock < item.quantity) {
         return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
       }
@@ -54,12 +53,10 @@ router.post('/', optionalAuth, async (req, res) => {
         price: product.price
       });
 
-      // Update product stock
       product.stock -= item.quantity;
       await product.save();
     }
 
-    // Create order - Mongoose will handle validation
     const order = new Order({
       user: userId,
       customerName,
@@ -74,22 +71,19 @@ router.post('/', optionalAuth, async (req, res) => {
 
     await order.save();
 
-    // If user is authenticated, add order to user's orders
     if (userId) {
-      await User.findByIdAndUpdate(userId, {
-        $push: { orders: order._id }
-      });
+      await User.findByIdAndUpdate(userId, { $push: { orders: order._id } });
     }
 
     await order.populate('items.product', 'name image');
-    
+
     res.status(201).json(order);
   } catch (error) {
     handleError(error, res, 400, 'Failed to create order');
   }
 });
 
-// GET all orders (admin only - requires read:orders permission) - must be before /:id route
+// GET all orders (admin only - requires read:orders permission)
 router.get('/', verifyAuth0Token, checkPermissions('read:orders'), async (req, res) => {
   try {
     const orders = await Order.find()
@@ -106,11 +100,9 @@ router.get('/:id', validateId('id'), async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
       .populate('items.product', 'name image description');
-    
-    if (!order) {
-      return handleNotFound(res, 'Order');
-    }
-    
+
+    if (!order) return handleNotFound(res, 'Order');
+
     res.json(order);
   } catch (error) {
     handleError(error, res, 500, 'Failed to fetch order');
@@ -122,16 +114,13 @@ router.put('/:id/status', verifyAuth0Token, checkPermissions('update:orders'), v
   try {
     const { status } = req.body;
     const order = await Order.findById(req.params.id);
-    
-    if (!order) {
-      return handleNotFound(res, 'Order');
-    }
 
-    // Update status - Mongoose enum validation will handle it
+    if (!order) return handleNotFound(res, 'Order');
+
     order.status = status;
     await order.save();
     await order.populate('items.product', 'name image');
-    
+
     res.json(order);
   } catch (error) {
     handleError(error, res, 400, 'Failed to update order status');
@@ -139,4 +128,3 @@ router.put('/:id/status', verifyAuth0Token, checkPermissions('update:orders'), v
 });
 
 module.exports = router;
-

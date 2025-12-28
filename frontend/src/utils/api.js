@@ -3,21 +3,19 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL}/api`
   : 'http://localhost:5000/api';
+
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  headers: { 'Content-Type': 'application/json' },
 });
 
-// Store function to set Auth0 token
+// Auth0 token getter
 let auth0TokenGetter = null;
-
 export const setAuth0TokenGetter = (getter) => {
   auth0TokenGetter = getter;
 };
 
-// Add Auth0 token to requests if available
+// Attach token to all requests
 api.interceptors.request.use(async (config) => {
   if (auth0TokenGetter) {
     try {
@@ -26,95 +24,55 @@ api.interceptors.request.use(async (config) => {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
-      // Silently fail if token cannot be retrieved
       console.error('Error getting Auth0 token:', error);
     }
   }
   return config;
 });
 
-// Handle 401 errors globally - token expired or invalid
+// Handle errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Token is invalid or expired - redirect to home
-      // Auth0 will handle re-authentication if needed
-      if (!window.location.pathname.startsWith('/admin')) {
-        // Only redirect non-admin pages to home
-        // Admin pages are protected by PrivateRoute which handles Auth0
+    if (error.response) {
+      // You can add more global error handling here if needed
+      if (error.response.status === 401) {
+        console.warn('Unauthorized request. Token may be invalid or expired.');
       }
     }
     return Promise.reject(error);
   }
 );
 
+// Orders API
+export const getOrders = () => api.get('/orders'); // requires read:orders
+export const updateOrderStatus = (id, status) =>
+  api.put(`/orders/${id}/status`, { status }); // requires update:orders
+
 // Products API
-export const getProducts = (params = {}) => {
-  return api.get('/products', { params });
-};
+export const getProducts = (params = {}) => api.get('/products', { params });
+export const getProduct = (id) => api.get(`/products/${id}`);
+export const createProduct = (formData) =>
+  api.post('/products', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const updateProduct = (id, formData) =>
+  api.put(`/products/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const deleteProduct = (id) => api.delete(`/products/${id}`);
 
-export const getProduct = (id) => {
-  return api.get(`/products/${id}`);
-};
+// User API
+export const getUserProfile = () => api.get('/users/me');
+export const updateUserProfile = (data) => api.put('/users/me', data);
+export const getUserOrders = () => api.get('/users/me/orders');
 
-export const createProduct = (formData) => {
-  return api.post('/products', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-};
+// Optional: Sync user with backend (for first-time login or role update)
+export const syncUser = async (token) =>
+  api.post('/users/sync', {}, { headers: { Authorization: `Bearer ${token}` } });
+export const createOrder = (orderData) => api.post('/orders', orderData);
 
-export const updateProduct = (id, formData) => {
-  return api.put(`/products/${id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-};
-
-export const deleteProduct = (id) => {
-  return api.delete(`/products/${id}`);
-};
 
 // Orders API
-export const createOrder = (orderData) => {
-  return api.post('/orders', orderData);
-};
 
-export const getOrders = () => {
-  return api.get('/orders');
-};
 
-export const getOrder = (id) => {
-  return api.get(`/orders/${id}`);
-};
-
-export const updateOrderStatus = (id, status) => {
-  return api.put(`/orders/${id}/status`, { status });
-};
-
-// User API (Auth0)
-export const getUserProfile = () => {
-  return api.get('/users/me');
-};
-
-export const updateUserProfile = (data) => {
-  return api.put('/users/me', data);
-};
-
-export const syncUser = async (token) => {
-  return api.post('/users/sync', {}, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-};
-
-export const getUserOrders = () => {
-  return api.get('/users/me/orders');
-};
+export const getOrder = (id) => api.get(`/orders/${id}`);
 
 export default api;
 
