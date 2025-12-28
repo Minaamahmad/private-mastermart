@@ -42,10 +42,27 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // You can add more global error handling here if needed
+      // Server responded with error status
       if (error.response.status === 401) {
         console.warn('Unauthorized request. Token may be invalid or expired.');
+      } else {
+        console.error(`API Error ${error.response.status}:`, {
+          url: error.config?.url,
+          method: error.config?.method,
+          message: error.response.data?.message || error.message,
+          data: error.response.data
+        });
       }
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network Error - No response from server:', {
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+        message: 'This usually means the backend server is not running or not accessible'
+      });
+    } else {
+      // Something else happened
+      console.error('Request Error:', error.message);
     }
     return Promise.reject(error);
   }

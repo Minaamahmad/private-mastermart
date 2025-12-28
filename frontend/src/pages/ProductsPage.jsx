@@ -20,7 +20,14 @@ const ProductsPage = () => {
         setProducts(response.data);
         setFilteredProducts(response.data);
       } catch (err) {
-        setError('Failed to load products');
+        console.error('Error loading products:', err);
+        const errorMessage = err.response?.data?.message || err.message || 'Failed to load products';
+        const statusCode = err.response?.status;
+        if (statusCode === 0 || !err.response) {
+          setError(`Cannot connect to server. Please check if the backend is running. (${errorMessage})`);
+        } else {
+          setError(`Failed to load products: ${errorMessage} (Status: ${statusCode})`);
+        }
       } finally {
         setLoading(false);
       }
