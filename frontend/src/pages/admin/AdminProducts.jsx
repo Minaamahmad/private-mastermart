@@ -379,7 +379,18 @@ const AdminProducts = () => {
             {editingProduct && editingProduct.image && (
               <div style={{ marginBottom: '15px' }}>
                 <p>Current Image:</p>
-                <img src={getImageUrl(editingProduct.image)} alt="Current" style={{ width: '200px', height: '200px', objectFit: 'cover' }} />
+                <img 
+                  src={getImageUrl(editingProduct.image)} 
+                  alt="Current" 
+                  style={{ width: '200px', height: '200px', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.style.cssText = 'width: 200px; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; border-radius: 8px;';
+                    fallback.textContent = 'Image not available';
+                    e.target.parentElement.appendChild(fallback);
+                  }}
+                />
               </div>
             )}
             <button type="submit" className="btn-primary" disabled={submitting}>
@@ -418,9 +429,20 @@ const AdminProducts = () => {
               <tr key={product._id}>
                 <td>
                   {product.image ? (
-                    <img src={getImageUrl(product.image)} alt={product.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                    <img 
+                      src={getImageUrl(product.image)} 
+                      alt={product.name} 
+                      style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        const fallback = document.createElement('div');
+                        fallback.style.cssText = 'width: 50px; height: 50px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;';
+                        fallback.textContent = 'N/A';
+                        e.target.parentElement.appendChild(fallback);
+                      }}
+                    />
                   ) : (
-                    <div style={{ width: '50px', height: '50px', background: '#ddd' }}></div>
+                    <div style={{ width: '50px', height: '50px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#999' }}>N/A</div>
                   )}
                 </td>
                 <td>{product.name || 'N/A'}</td>

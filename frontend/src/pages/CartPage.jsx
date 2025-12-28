@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getImageUrl } from '../utils/imageUtils';
 
 const CartPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loginWithRedirect } = useAuth0();
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
@@ -73,6 +75,13 @@ const CartPage = () => {
                   src={getImageUrl(item.image)} 
                   alt={item.name}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.style.cssText = 'width: 100%; height: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;';
+                    fallback.textContent = 'No Image';
+                    e.target.parentElement.appendChild(fallback);
+                  }}
                 />
               </div>
             )}
@@ -167,9 +176,29 @@ const CartPage = () => {
             Rs {totalAmount.toFixed(0)}
           </h2>
         </div>
+        {!isAuthenticated && (
+          <div style={{ 
+            marginBottom: '16px', 
+            padding: '12px', 
+            background: '#fff3cd', 
+            borderRadius: '8px',
+            border: '1px solid #ffc107',
+            color: '#856404'
+          }}>
+            <strong>⚠️ Please login to place an order</strong>
+          </div>
+        )}
         <button 
           className="btn-primary" 
-          onClick={() => navigate('/checkout')} 
+          onClick={() => {
+            if (!isAuthenticated) {
+              loginWithRedirect({
+                appState: { returnTo: '/checkout' }
+              });
+            } else {
+              navigate('/checkout');
+            }
+          }} 
           style={{ 
             width: '100%',
             padding: '16px',
@@ -186,7 +215,7 @@ const CartPage = () => {
             e.target.style.transform = 'scale(1)';
           }}
         >
-          Proceed to Checkout →
+          {isAuthenticated ? 'Proceed to Checkout →' : 'Login to Checkout →'}
         </button>
       </div>
     </div>

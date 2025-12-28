@@ -17,12 +17,18 @@ const CheckoutPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      navigate('/');
+      return;
+    }
+    
     const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     if (savedCart.length === 0) {
       navigate('/cart');
     }
     setCart(savedCart);
-  }, [navigate]);
+  }, [navigate, isAuthenticated]);
 
   // Load user data if authenticated
   useEffect(() => {

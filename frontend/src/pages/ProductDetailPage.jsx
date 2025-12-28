@@ -71,7 +71,25 @@ const ProductDetailPage = () => {
                 src={getImageUrl(product.image)} 
                 alt={product.name}
                 style={{ width: '100%', height: 'auto', display: 'block' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const fallback = e.target.parentElement.querySelector('.image-fallback');
+                  if (fallback) fallback.style.display = 'flex';
+                }}
               />
+              <div 
+                className="image-fallback"
+                style={{ 
+                  display: 'none',
+                  height: '400px', 
+                  background: '#f0f0f0', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  color: '#999'
+                }}
+              >
+                No Image Available
+              </div>
               {discount > 0 && (
                 <div className="discount-badge" style={{ position: 'absolute', top: '16px', left: '16px' }}>
                   -{discount}%

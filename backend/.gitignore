@@ -30,3 +30,7 @@ yarn-error.log*
 *.suo
 *.ntvs*
 *.njsproj
+
+# Uploaded files (should not be committed)
+uploads/
+!uploads/.gitkeep

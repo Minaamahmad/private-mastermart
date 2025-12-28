@@ -56,7 +56,14 @@ const HomePage = () => {
                   <Link to={`/products/${product._id}`} className="card-link">
                     <div className="card-image-wrapper">
                       {product.image ? (
-                        <img src={getImageUrl(product.image)} alt={product.name} />
+                        <img 
+                          src={getImageUrl(product.image)} 
+                          alt={product.name}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
                       ) : (
                         <div style={{ 
                           position: 'absolute', 
@@ -113,14 +120,31 @@ const HomePage = () => {
                   <Link to={`/products/${product._id}`} className="card-link">
                     <div className="card-image-wrapper">
                       {product.image ? (
-                       <img 
-                       src={product.image.startsWith('http') 
-                         ? product.image 
-                         : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/${product.image.startsWith('uploads/') ? '' : 'uploads/'}${product.image.replace('http://localhost:5000/', '')}`
-                       } 
-                       alt={product.name} 
-                     />
-
+                        <>
+                          <img 
+                            src={getImageUrl(product.image)} 
+                            alt={product.name}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              const fallback = e.target.nextSibling;
+                              if (fallback) fallback.style.display = 'flex';
+                            }}
+                          />
+                          <div style={{ 
+                            display: 'none',
+                            position: 'absolute', 
+                            top: 0, 
+                            left: 0, 
+                            width: '100%', 
+                            height: '100%', 
+                            background: '#f0f0f0', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: '#999'
+                          }}>
+                            No Image
+                          </div>
+                        </>
                       ) : (
                         <div style={{ 
                           position: 'absolute', 

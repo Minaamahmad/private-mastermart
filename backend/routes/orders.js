@@ -9,18 +9,14 @@ const { handleError, handleNotFound } = require('../utils/errorHandler');
 const { findUserByAuth0Id } = require('../utils/userHelpers');
 const validateId = require('../middleware/validateId');
 
-// POST create order (public - supports both authenticated and guest users)
-router.post('/', optionalAuth, async (req, res) => {
+// POST create order (requires authentication - users must be logged in to place orders)
+router.post('/', verifyAuth0Token, async (req, res) => {
   try {
     const { customerName, customerPhone, customerAddress, customerEmail, items } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Order must have at least one item' });
     }
-    router.put('/:id/status', verifyAuth0Token, checkPermissions('update:orders'), validateId('id'), async (req, res) => {
-  // ...
-});
-
 
     let totalAmount = 0;
     const orderItems = [];

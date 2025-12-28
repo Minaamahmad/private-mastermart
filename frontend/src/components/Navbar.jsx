@@ -103,7 +103,11 @@ const Navbar = () => {
           {isAuthenticated ? (
             <li>
               <button 
-                onClick={() => logout({ returnTo: window.location.origin })} 
+                onClick={() => {
+                  setIsAdmin(false);
+                  const returnTo = `${window.location.protocol}//${window.location.host}`;
+                  logout({ returnTo });
+                }} 
                 className="btn-logout"
               >
                 Logout

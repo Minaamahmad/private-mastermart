@@ -21,17 +21,31 @@ app.use('/api', generalRateLimiter);
 
 app.use(cors({
   origin: '*', // Allows Vercel to access Railway
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false,
+  exposedHeaders: ['Content-Length', 'Content-Type']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // SERVE STATIC IMAGES - This allows frontend to see uploaded files
 // Using process.cwd() ensures it finds the folder on Railway's environment
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'), {
-  setHeaders: (res) => {
+const uploadsDir = path.join(process.cwd(), 'uploads');
+// Ensure uploads directory exists
+const fs = require('fs');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use('/uploads', express.static(uploadsDir, {
+  setHeaders: (res, filePath) => {
+    // Set CORS headers for images
+    res.set('Access-Control-Allow-Origin', '*');
+    res.set('Access-Control-Allow-Methods', 'GET');
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    // Cache images for better performance
+    res.set('Cache-Control', 'public, max-age=31536000, immutable');
   }
 }));
 
