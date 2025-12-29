@@ -14,11 +14,17 @@ export const getImageUrl = (imagePath) => {
   }
   
   // If it's a local path, prepend the API URL
-  // VITE_API_URL should be set to your Railway backend URL (e.g., https://your-app.railway.app)
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  
-  // Remove trailing slash from API_URL if present
-  const baseUrl = API_URL.replace(/\/+$/, '');
+  // Determine base URL - use Railway backend in production if env var not set
+  let baseUrl;
+  if (import.meta.env.VITE_API_URL) {
+    baseUrl = import.meta.env.VITE_API_URL.replace(/\/+$/, '');
+  } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    // Production - use Railway backend
+    baseUrl = 'https://master-mart-production.up.railway.app';
+  } else {
+    // Development - use localhost
+    baseUrl = 'http://localhost:5000';
+  }
   
   // Ensure the path starts with /uploads/ if it doesn't already
   let cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;

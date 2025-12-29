@@ -1,14 +1,32 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
-  : 'http://localhost:5000/api';
+// Determine API URL - use Railway backend in production if env var not set
+const getApiUrl = () => {
+  let baseUrl;
+  
+  // If VITE_API_URL is explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    baseUrl = import.meta.env.VITE_API_URL;
+  }
+  // If running in production (on Vercel), use Railway backend
+  else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    baseUrl = 'https://master-mart-production.up.railway.app';
+  }
+  // Default to localhost for development
+  else {
+    baseUrl = 'http://localhost:5000';
+  }
+  
+  // Remove trailing slashes and add /api
+  baseUrl = baseUrl.replace(/\/+$/, '');
+  return `${baseUrl}/api`;
+};
 
-// Warn if using localhost in production
-if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && API_URL.includes('localhost')) {
-  console.error('⚠️ WARNING: API URL is set to localhost in production!');
-  console.error('Please set VITE_API_URL environment variable in Vercel and redeploy.');
-  console.error('Current API URL:', API_URL);
+const API_URL = getApiUrl();
+
+// Log the API URL being used
+if (typeof window !== 'undefined') {
+  console.log('🔌 API URL:', API_URL);
 }
 
 const api = axios.create({
@@ -41,13 +59,20 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Log the full URL being requested
+    const fullUrl = error.config?.baseURL && error.config?.url 
+      ? `${error.config.baseURL}${error.config.url}`
+      : error.config?.url || 'unknown';
+    
     if (error.response) {
       // Server responded with error status
       if (error.response.status === 401) {
         console.warn('Unauthorized request. Token may be invalid or expired.');
       } else {
         console.error(`API Error ${error.response.status}:`, {
-          url: error.config?.url,
+          fullUrl,
+          baseURL: error.config?.baseURL,
+          path: error.config?.url,
           method: error.config?.method,
           message: error.response.data?.message || error.message,
           data: error.response.data
@@ -56,13 +81,14 @@ api.interceptors.response.use(
     } else if (error.request) {
       // Request was made but no response received
       console.error('Network Error - No response from server:', {
-        url: error.config?.url,
+        fullUrl,
         baseURL: error.config?.baseURL,
+        path: error.config?.url,
         message: 'This usually means the backend server is not running or not accessible'
       });
     } else {
       // Something else happened
-      console.error('Request Error:', error.message);
+      console.error('Request Error:', error.message, { fullUrl });
     }
     return Promise.reject(error);
   }
