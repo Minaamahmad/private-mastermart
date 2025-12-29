@@ -71,28 +71,6 @@ const ProductsPage = () => {
         ))}
       </div>
 
-      <div className="search-container">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search products..."
-          value={search}
-          onChange={(e) => {
-            const value = e.target.value;
-            setSearchParams(value ? { search: value } : {});
-          }}
-        />
-        {search && (
-          <button 
-            onClick={() => setSearchParams({})}
-            className="search-button"
-            style={{ right: search ? '80px' : '8px' }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
-
       {search && (
         <p style={{ marginBottom: '20px', color: '#666', textAlign: 'center', fontSize: '16px' }}>
           Showing <strong>{filteredProducts.length}</strong> result(s) for "<strong>{search}</strong>"
@@ -108,7 +86,7 @@ const ProductsPage = () => {
               <div key={product._id} className="card">
                 <Link to={`/products/${product._id}`} className="card-link">
                   <div className="card-image-wrapper">
-                    {product.image ? (
+                    {product.image && getImageUrl(product.image) ? (
                       <>
                         <img 
                           src={getImageUrl(product.image)} 
@@ -118,6 +96,7 @@ const ProductsPage = () => {
                             const fallback = e.target.nextSibling;
                             if (fallback) fallback.style.display = 'flex';
                           }}
+                          style={{ zIndex: 2 }}
                         />
                         <div style={{ 
                           display: 'none',
@@ -129,7 +108,8 @@ const ProductsPage = () => {
                           background: '#f0f0f0', 
                           alignItems: 'center', 
                           justifyContent: 'center',
-                          color: '#999'
+                          color: '#999',
+                          zIndex: 1
                         }}>
                           No Image
                         </div>

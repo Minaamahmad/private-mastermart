@@ -1,100 +1,72 @@
-/* Temu-inspired Navbar */
-
 .navbar {
-  background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
-  color: white;
-  padding: 12px 0;
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .navbar-container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
 }
 
 .navbar-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
   text-decoration: none;
-  color: white;
-  display: flex;
-  align-items: center;
-  font-weight: 800;
-  font-size: 24px;
-  transition: transform 0.2s ease;
-}
-
-.navbar-logo:hover {
-  transform: scale(1.05);
 }
 
 .navbar-logo h2 {
   margin: 0;
-  color: white;
-  font-size: 28px;
-  font-weight: 900;
-  letter-spacing: -1px;
+  color: #2563eb;
 }
 
 .navbar-search {
   flex: 1;
   max-width: 600px;
-  position: relative;
+  margin: 0 2rem;
 }
 
 .navbar-search input {
   width: 100%;
-  padding: 12px 50px 12px 20px;
-  border: none;
-  border-radius: 24px;
-  font-size: 15px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
   outline: none;
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s;
 }
 
 .navbar-search input:focus {
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: scale(1.02);
+  border-color: #2563eb;
 }
 
-.navbar-search input::placeholder {
-  color: #999;
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
 }
 
-.navbar-search button {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
+.navbar-links a {
+  text-decoration: none;
+  color: #374151;
+  transition: color 0.3s;
 }
 
-.navbar-search button:hover {
-  transform: translateY(-50%) scale(1.05);
+.navbar-links a:hover {
+  color: #2563eb;
 }
 
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 16px;
+  gap: 1.5rem;
   align-items: center;
   margin: 0;
   padding: 0;
@@ -106,66 +78,112 @@
 }
 
 .navbar-menu li a {
-  color: white;
-  font-weight: 600;
   text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  font-size: 15px;
+  color: #374151;
+  transition: color 0.3s;
+  font-weight: 500;
 }
 
 .navbar-menu li a:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.btn-logout {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 8px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-logout:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-}
-
-.navbar-menu .btn-primary {
-  background: white;
-  color: #ff4757;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.navbar-menu .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  color: #2563eb;
 }
 
 .user-info {
-  color: white;
+  color: #374151;
   font-weight: 500;
-  font-size: 14px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border-radius: 0.375rem;
 }
 
-@media (max-width: 1024px) {
+.btn-logout {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.btn-logout:hover {
+  background: #dc2626;
+}
+
+.navbar-menu .btn-primary {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.navbar-menu .btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  color: #374151;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.cart-icon-wrapper:hover {
+  color: #2563eb;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+.user-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+  transition: color 0.3s;
+}
+
+.user-icon:hover {
+  color: #2563eb;
+}
+
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-button {
+    display: block;
+  }
+
   .navbar-container {
     flex-wrap: wrap;
   }
@@ -174,42 +192,29 @@
     order: 3;
     width: 100%;
     max-width: 100%;
-    margin-top: 12px;
-  }
-}
-
-@media (max-width: 768px) {
-  .navbar-container {
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-  }
-
-  .navbar-logo h2 {
-    font-size: 22px;
-  }
-
-  .navbar-search {
-    order: 2;
-    width: 100%;
-    margin: 0;
+    margin: 1rem 0 0 0;
   }
 
   .navbar-menu {
-    order: 3;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    order: 2;
     width: 100%;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
-  .navbar-menu li a {
-    padding: 6px 12px;
-    font-size: 14px;
+  .navbar-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
   }
 
-  .navbar-menu .btn-primary {
-    padding: 8px 16px;
-    font-size: 13px;
+  .navbar-links.active {
+    display: flex;
   }
 }

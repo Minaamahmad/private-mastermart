@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { createOrder, getUserProfile } from '../utils/api';
+import { createOrder, createStripeCheckoutSession, getUserProfile } from '../utils/api';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -81,7 +81,7 @@ const CheckoutPage = () => {
     }
 
     try {
-      const orderData = {
+      const checkoutData = {
         customerName: formData.customerName,
         customerEmail: formData.customerEmail || null,
         customerPhone: formData.customerPhone,
@@ -92,11 +92,17 @@ const CheckoutPage = () => {
         }))
       };
 
-      const response = await createOrder(orderData);
-      localStorage.removeItem('cart');
-      navigate(`/order-confirmation/${response.data._id}`);
+      // Create Stripe checkout session
+      const response = await createStripeCheckoutSession(checkoutData);
+      
+      // Redirect to Stripe payment page
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      } else {
+        throw new Error('No payment URL received');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to place order. Please try again.');
+      setError(err.response?.data?.message || 'Failed to create payment session. Please try again.');
       setLoading(false);
     }
   };
@@ -121,7 +127,8 @@ const CheckoutPage = () => {
           ))}
           <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '2px solid #333' }}>
             <h2>Total: Rs {totalAmount.toFixed(2)}</h2>
-            <p style={{ color: '#666', marginTop: '10px' }}>Payment Method: Cash on Delivery</p>
+            <p style={{ color: '#666', marginTop: '10px' }}>Payment Method: Stripe (Secure Online Payment)</p>
+            <p style={{ color: '#999', fontSize: '0.9em', marginTop: '5px' }}>You will be redirected to Stripe's secure payment page</p>
           </div>
         </div>
 

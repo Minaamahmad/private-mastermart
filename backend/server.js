@@ -60,6 +60,7 @@ app.get('/', (req, res) => {
       products: '/api/products',
       orders: '/api/orders',
       users: '/api/users',
+      stripe: '/api/stripe',
       uploads: '/uploads'
     },
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
@@ -85,6 +86,15 @@ app.get('/health', (req, res) => {
 app.use('/api/products', require('./routes/products'));
 app.use('/api/orders', require('./routes/orders'));
 app.use('/api/users', require('./routes/users'));
+
+// Stripe routes
+try {
+  const stripeRoutes = require('./routes/stripe');
+  app.use('/api/stripe', stripeRoutes);
+  console.log('✅ Stripe routes registered');
+} catch (error) {
+  console.error('❌ Failed to load Stripe routes:', error.message);
+}
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/ecommerce';

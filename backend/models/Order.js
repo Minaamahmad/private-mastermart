@@ -86,10 +86,26 @@ const orderSchema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: {
-      values: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'Online Payment'],
+      values: ['Cash on Delivery', 'Credit Card', 'Debit Card', 'Online Payment', 'Stripe'],
       message: 'Invalid payment method'
     },
     default: 'Cash on Delivery'
+  },
+  stripeSessionId: {
+    type: String,
+    default: null
+  },
+  stripePaymentIntentId: {
+    type: String,
+    default: null
+  },
+  paymentStatus: {
+    type: String,
+    enum: {
+      values: ['pending', 'paid', 'failed', 'cancelled'],
+      message: 'Invalid payment status'
+    },
+    default: 'pending'
   },
   status: {
     type: String,

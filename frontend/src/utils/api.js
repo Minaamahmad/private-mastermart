@@ -118,10 +118,11 @@ export const syncUser = async (token) =>
   api.post('/users/sync', {}, { headers: { Authorization: `Bearer ${token}` } });
 export const createOrder = (orderData) => api.post('/orders', orderData);
 
+// Stripe API
+export const createStripeCheckoutSession = (checkoutData) => api.post('/stripe/create-checkout-session', checkoutData);
+export const verifyPayment = (orderId) => api.get(`/stripe/verify-payment/${orderId}`);
 
 // Orders API
-
-
 export const getOrder = (id) => api.get(`/orders/${id}`);
 
 export default api;

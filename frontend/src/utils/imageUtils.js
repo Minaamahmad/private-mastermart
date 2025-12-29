@@ -13,17 +13,32 @@ export const getImageUrl = (imagePath) => {
     return imagePath;
   }
   
-  // If it's a local path, prepend the API URL
-  // Determine base URL - use Railway backend in production if env var not set
+  // Determine base URL for images
+  // In development, use the current origin (Vite proxy will handle /uploads)
+  // In production, use the backend URL directly
   let baseUrl;
-  if (import.meta.env.VITE_API_URL) {
-    baseUrl = import.meta.env.VITE_API_URL.replace(/\/+$/, '');
-  } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    // Production - use Railway backend
-    baseUrl = 'https://master-mart-production.up.railway.app';
+  if (typeof window !== 'undefined') {
+    // Check if we're in development (localhost)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Development: Use current origin (Vite dev server) - proxy will handle it
+      baseUrl = window.location.origin;
+    } else {
+      // Production: Use Railway backend or VITE_API_URL
+      if (import.meta.env.VITE_API_URL) {
+        // Extract base URL from API URL (remove /api if present)
+        baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '').replace(/\/+$/, '');
+      } else {
+        // Fallback to Railway backend
+        baseUrl = 'https://master-mart-production.up.railway.app';
+      }
+    }
   } else {
-    // Development - use localhost
-    baseUrl = 'http://localhost:5000';
+    // SSR or build time - use environment variable or default
+    if (import.meta.env.VITE_API_URL) {
+      baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '').replace(/\/+$/, '');
+    } else {
+      baseUrl = 'http://localhost:5000';
+    }
   }
   
   // Ensure the path starts with /uploads/ if it doesn't already
@@ -36,6 +51,11 @@ export const getImageUrl = (imagePath) => {
     cleanPath = `/uploads/${cleanPath}`;
   }
   
-  return `${baseUrl}${cleanPath}`;
+  const fullUrl = `${baseUrl}${cleanPath}`;
+  // Debug logging (only in development)
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    console.log('🖼️ Image URL:', fullUrl, 'from path:', imagePath);
+  }
+  return fullUrl;
 };
 
