@@ -87,10 +87,10 @@ const AdminProducts = () => {
     data.append('name', formData.name.trim());
     data.append('description', formData.description.trim());
     data.append('price', parseFloat(formData.price));
-    if (formData.originalPrice && formData.originalPrice.trim()) {
+    if (formData.originalPrice && String(formData.originalPrice).trim()) {
       data.append('originalPrice', parseFloat(formData.originalPrice));
     }
-    if (formData.discount && formData.discount.trim()) {
+    if (formData.discount && String(formData.discount).trim()) {
       data.append('discount', parseFloat(formData.discount));
     }
     data.append('category', formData.category);
