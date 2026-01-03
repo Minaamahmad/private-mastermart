@@ -10,7 +10,7 @@ const getApiUrl = () => {
   }
   // If running in production (on Vercel), use Railway backend
   else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    baseUrl = 'https://master-mart-production.up.railway.app';
+    baseUrl = 'https://private-mastermart-production.up.railway.app';
   }
   // Default to localhost for development
   else {
