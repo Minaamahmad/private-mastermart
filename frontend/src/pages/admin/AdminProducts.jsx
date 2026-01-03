@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../utils/api';
 import { getImageUrl } from '../../utils/imageUtils';
+import './AdminProducts.css';
+
 
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
@@ -200,11 +202,11 @@ const AdminProducts = () => {
   // Show error state if failed to load and no products
   if (error && !loading && products.length === 0) {
     return (
-      <div className="container" style={{ padding: '20px' }}>
+      <div className="container">
         <div className="error">
           <h2>Error Loading Products</h2>
           <p>{error}</p>
-          <button className="btn-primary" onClick={fetchProducts} style={{ marginTop: '10px' }}>
+          <button className="btn-primary" onClick={fetchProducts}>
             Retry
           </button>
         </div>
@@ -213,15 +215,15 @@ const AdminProducts = () => {
   }
 
   return (
-    <div className="container" style={{ padding: '20px', minHeight: '400px' }}>
+    <div className="container">
       {loading ? (
-        <div className="loading" style={{ padding: '40px', textAlign: 'center' }}>
+        <div className="loading">
           <h2>Loading products...</h2>
           <p>Please wait while we fetch the products.</p>
         </div>
       ) : (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
             <h1>Manage Products</h1>
             <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
               {showForm ? 'Cancel' : 'Add New Product'}
@@ -229,19 +231,16 @@ const AdminProducts = () => {
           </div>
 
       {error && (
-        <div className="error" style={{ marginBottom: '20px' }}>
+        <div className="error">
           {error}
-          <button 
-            onClick={() => setError(null)} 
-            style={{ marginLeft: '10px', padding: '5px 10px', fontSize: '12px' }}
-          >
+          <button onClick={() => setError(null)}>
             Dismiss
           </button>
         </div>
       )}
 
       {showForm && (
-        <div className="card" style={{ marginBottom: '30px' }}>
+        <div className="card">
           <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -264,7 +263,7 @@ const AdminProducts = () => {
                 rows="4"
               />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-row">
               <div className="form-group">
                 <label>Price (Selling Price) *</label>
                 <input
@@ -289,7 +288,7 @@ const AdminProducts = () => {
                 />
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="form-row">
               <div className="form-group">
                 <label>Original Price (Optional)</label>
                 <input
@@ -301,7 +300,7 @@ const AdminProducts = () => {
                   min="0"
                   placeholder="Enter original price"
                 />
-                <small style={{ color: '#666', fontSize: '12px' }}>
+                <small>
                   Discount will be calculated automatically
                 </small>
               </div>
@@ -316,20 +315,13 @@ const AdminProducts = () => {
                   max="100"
                   placeholder="Enter discount percentage"
                 />
-                <small style={{ color: '#666', fontSize: '12px' }}>
+                <small>
                   Original price will be calculated automatically
                 </small>
               </div>
             </div>
             {(formData.originalPrice || formData.discount) && (
-              <div style={{ 
-                padding: '12px', 
-                background: '#e8f5e9', 
-                borderRadius: '8px', 
-                marginBottom: '20px',
-                fontSize: '14px',
-                color: '#2e7d32'
-              }}>
+              <div className="preview-section">
                 <strong>Preview:</strong> {
                   formData.originalPrice && formData.price ? (
                     <>
@@ -377,16 +369,15 @@ const AdminProducts = () => {
               />
             </div>
             {editingProduct && editingProduct.image && (
-              <div style={{ marginBottom: '15px' }}>
+              <div className="current-image-container">
                 <p>Current Image:</p>
                 <img 
                   src={getImageUrl(editingProduct.image)} 
                   alt="Current" 
-                  style={{ width: '200px', height: '200px', objectFit: 'cover' }}
                   onError={(e) => {
                     e.target.style.display = 'none';
                     const fallback = document.createElement('div');
-                    fallback.style.cssText = 'width: 200px; height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999; border-radius: 8px;';
+                    fallback.className = 'image-fallback-large';
                     fallback.textContent = 'Image not available';
                     e.target.parentElement.appendChild(fallback);
                   }}
@@ -401,15 +392,15 @@ const AdminProducts = () => {
       )}
 
       {products.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', background: 'white', borderRadius: '8px', marginTop: '20px' }}>
+        <div className="empty-state">
           <h2>No Products Found</h2>
           <p>Start by adding your first product!</p>
-          <button className="btn-primary" onClick={() => setShowForm(true)} style={{ marginTop: '20px' }}>
+          <button className="btn-primary" onClick={() => setShowForm(true)}>
             Add First Product
           </button>
         </div>
       ) : (
-        <div className="table-container" style={{ overflowX: 'auto' }}>
+        <div className="table-container">
           <table className="table">
             <thead>
               <tr>
@@ -432,49 +423,51 @@ const AdminProducts = () => {
                     <img 
                       src={getImageUrl(product.image)} 
                       alt={product.name} 
-                      style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                      
                       onError={(e) => {
                         e.target.style.display = 'none';
                         const fallback = document.createElement('div');
-                        fallback.style.cssText = 'width: 50px; height: 50px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;';
+                        fallback.className = 'image-fallback-small';
                         fallback.textContent = 'N/A';
                         e.target.parentElement.appendChild(fallback);
                       }}
                     />
                   ) : (
-                    <div style={{ width: '50px', height: '50px', background: '#ddd', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', color: '#999' }}>N/A</div>
+                    <div>N/A</div>
                   )}
                 </td>
                 <td>{product.name || 'N/A'}</td>
                 <td>Rs {product.price ? product.price.toFixed(0) : '0'}</td>
                 <td>
                   {product.originalPrice ? (
-                    <span style={{ textDecoration: 'line-through', color: '#999' }}>
+                    <span className="original-price">
                       Rs {product.originalPrice.toFixed(0)}
                     </span>
                   ) : (
-                    <span style={{ color: '#999' }}>—</span>
+                    <span className="no-value">—</span>
                   )}
                 </td>
                 <td>
                   {product.discount > 0 ? (
-                    <span style={{ color: '#ff4757', fontWeight: 600 }}>
+                    <span className="discount-badge">
                       {product.discount}%
                     </span>
                   ) : (
-                    <span style={{ color: '#999' }}>—</span>
+                    <span className="no-value">—</span>
                   )}
                 </td>
                 <td>{product.stock !== undefined ? product.stock : 0}</td>
                 <td>{product.category || 'General'}</td>
                 <td>{product.featured ? 'Yes' : 'No'}</td>
                 <td>
-                  <button className="btn-secondary" onClick={() => handleEdit(product)} style={{ marginRight: '10px' }}>
-                    Edit
-                  </button>
-                  <button className="btn-danger" onClick={() => handleDelete(product._id)}>
-                    Delete
-                  </button>
+                  <div className="action-buttons">
+                    <button className="btn-secondary" onClick={() => handleEdit(product)}>
+                      Edit
+                    </button>
+                    <button className="btn-danger" onClick={() => handleDelete(product._id)}>
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
               ))}

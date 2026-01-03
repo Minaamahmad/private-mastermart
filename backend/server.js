@@ -147,8 +147,11 @@ process.on('SIGTERM', () => {
   console.log('⚠️  SIGTERM received, shutting down gracefully...');
   server.close(() => {
     console.log('✅ HTTP server closed');
-    mongoose.connection.close(false, () => {
+    mongoose.connection.close(false).then(() => {
       console.log('✅ MongoDB connection closed');
+      process.exit(0);
+    }).catch((err) => {
+      console.error('❌ Error closing MongoDB connection:', err);
       process.exit(0);
     });
   });
@@ -158,8 +161,11 @@ process.on('SIGINT', () => {
   console.log('⚠️  SIGINT received, shutting down gracefully...');
   server.close(() => {
     console.log('✅ HTTP server closed');
-    mongoose.connection.close(false, () => {
+    mongoose.connection.close(false).then(() => {
       console.log('✅ MongoDB connection closed');
+      process.exit(0);
+    }).catch((err) => {
+      console.error('❌ Error closing MongoDB connection:', err);
       process.exit(0);
     });
   });
@@ -176,7 +182,10 @@ process.on('uncaughtException', (err) => {
   console.error('❌ Uncaught Exception:', err);
   // Gracefully shutdown
   server.close(() => {
-    mongoose.connection.close(false, () => {
+    mongoose.connection.close(false).then(() => {
+      process.exit(1);
+    }).catch((closeErr) => {
+      console.error('❌ Error closing MongoDB connection:', closeErr);
       process.exit(1);
     });
   });
