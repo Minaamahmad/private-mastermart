@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="footer-container">
         <div className="footer-grid">
           <div className="footer-section">
-            <h3>ShopHub</h3>
+            <h3>Master Mart</h3>
             <p>Your one-stop shop for quality products at great prices.</p>
           </div>
 
@@ -43,7 +43,7 @@ const Footer = () => {
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2024 ShopHub. All rights reserved.</p>
+          <p>&copy; 2026 Master mart. All rights reserved.</p>
         </div>
       </div>
     </footer>

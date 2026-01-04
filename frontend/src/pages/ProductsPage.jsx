@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getProducts } from '../utils/api';
 import { getImageUrl } from '../utils/imageUtils';
+import './ProductsPage.css';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -48,14 +49,14 @@ const ProductsPage = () => {
     }
   }, [search, products]);
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return <div className="products-loading">Loading...</div>;
+  if (error) return <div className="products-error">{error}</div>;
 
   const categories = ['All Categories', 'Electronics', 'Clothing', 'Food', 'General'];
 
   return (
-    <div className="container">
-      <div className="section-header">
+    <div className="products-page-container">
+      <div className="products-page-header">
         <h1>All Products</h1>
       </div>
 
@@ -72,20 +73,20 @@ const ProductsPage = () => {
       </div>
 
       {search && (
-        <p style={{ marginBottom: '20px', color: '#666', textAlign: 'center', fontSize: '16px' }}>
+        <p className="search-results-message">
           Showing <strong>{filteredProducts.length}</strong> result(s) for "<strong>{search}</strong>"
         </p>
       )}
 
       {filteredProducts.length > 0 ? (
-        <div className="grid">
+        <div className="products-grid">
           {filteredProducts.map((product) => {
             const originalPrice = product.originalPrice || (product.price && product.discount > 0 ? (product.price / (1 - product.discount / 100)) : null);
             const discount = product.discount || 0;
             return (
-              <div key={product._id} className="card">
-                <Link to={`/products/${product._id}`} className="card-link">
-                  <div className="card-image-wrapper">
+              <div key={product._id} className="product-card">
+                <Link to={`/products/${product._id}`} className="product-card-link">
+                  <div className="product-image-wrapper">
                     {product.image && getImageUrl(product.image) ? (
                       <>
                         <img 
@@ -96,60 +97,34 @@ const ProductsPage = () => {
                             const fallback = e.target.nextSibling;
                             if (fallback) fallback.style.display = 'flex';
                           }}
-                          style={{ zIndex: 2 }}
                         />
-                        <div style={{ 
-                          display: 'none',
-                          position: 'absolute', 
-                          top: 0, 
-                          left: 0, 
-                          width: '100%', 
-                          height: '100%', 
-                          background: '#f0f0f0', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          color: '#999',
-                          zIndex: 1
-                        }}>
+                        <div className="product-image-fallback" style={{ display: 'none' }}>
                           No Image
                         </div>
                       </>
                     ) : (
-                      <div style={{ 
-                        position: 'absolute', 
-                        top: 0, 
-                        left: 0, 
-                        width: '100%', 
-                        height: '100%', 
-                        background: '#f0f0f0', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        color: '#999'
-                      }}>
+                      <div className="product-image-fallback">
                         No Image
                       </div>
                     )}
                     {discount > 0 && (
-                      <div className="discount-badge">-{discount}%</div>
+                      <div className="product-discount-badge">-{discount}%</div>
                     )}
                   </div>
-                  <div className="card-content">
-                    <h3 className="card-title">{product.name}</h3>
-                    <p className="card-description">
-                      {product.description ? product.description.substring(0, 60) + '...' : ''}
+                  <div className="product-card-content">
+                    <h3 className="product-card-title">{product.name}</h3>
+                    <p className="product-card-description">
+                      {product.description ? product.description.substring(0, 100) + '...' : ''}
                     </p>
-                    <div className="card-price-section">
-                      <span className="price">Rs {product.price ? product.price.toFixed(0) : '0'}</span>
+                    <div className="product-price-section">
+                      <span className="product-price">Rs {product.price ? product.price.toFixed(0) : '0'}</span>
                       {originalPrice && originalPrice > product.price && (
-                        <span className="price-original">Rs {originalPrice.toFixed(0)}</span>
+                        <span className="product-price-original">Rs {originalPrice.toFixed(0)}</span>
                       )}
                     </div>
-                    {product.stock === 0 ? (
-                      <span className="stock-badge out-of-stock">Out of Stock</span>
-                    ) : (
-                      <span className="stock-badge in-stock">In Stock</span>
-                    )}
+                    <span className={`product-stock-badge ${product.stock === 0 ? 'out-of-stock' : 'in-stock'}`}>
+                      {product.stock === 0 ? 'Out of Stock' : 'In Stock'}
+                    </span>
                   </div>
                 </Link>
               </div>
@@ -157,7 +132,7 @@ const ProductsPage = () => {
           })}
         </div>
       ) : (
-        <div className="empty-state">
+        <div className="products-empty-state">
           <h3>{search ? `No products found for "${search}"` : 'No products available'}</h3>
           <p>{search ? 'Try a different search term or browse all categories' : 'Check back soon for new products!'}</p>
           {search && (
@@ -176,4 +151,3 @@ const ProductsPage = () => {
 };
 
 export default ProductsPage;
-

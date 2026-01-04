@@ -1,0 +1,33 @@
+/* Update your container to have NO maximum limit */
+.container, 
+.products-page-container {
+  max-width: 100% !important; /* This is the key change */
+  width: 100%;
+  margin: 0;
+  padding: 0 4%; /* Gives you a consistent 4% gap on the left and right */
+  box-sizing: border-box;
+}
+
+/* Ensure the grid follows suit */
+.products-grid {
+  display: grid !important; /* Forces grid mode */
+  
+  /* This says: "Create as many columns as possible that are at least 280px wide. 
+     If the next card won't fit, move it to a new line." */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  
+  gap: 2rem;
+  width: 100%;
+  margin-top: 2rem;
+  
+  /* Ensure no flex-box settings are interfering */
+  flex-wrap: wrap; 
+}
+
+/* For the Hero Section to be edge-to-edge without any gaps */
+.hero-section {
+  width: 100vw; /* 100% of the Viewport Width */
+  margin-left: calc(50% - 50vw); /* Centers it if the parent has padding */
+  margin-right: calc(50% - 50vw);
+  padding: 6rem 5%;
+}

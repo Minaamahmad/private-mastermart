@@ -73,9 +73,13 @@
 /* Products Grid */
 .products-grid {
   display: grid;
+  /* '1fr' allows the columns to grow and fill the remaining space */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  
+  /* Force the grid to be 100% of its parent */
+  width: 100%;
 }
 
 .product-card {
