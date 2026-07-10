@@ -1,147 +1,63 @@
-# E-commerce Store - MERN Stack
+# Master Mart
 
-A simple e-commerce platform for small businesses with Cash on Delivery functionality.
+Single-store e-commerce built with Next.js (App Router) and MongoDB.
 
-## Features
+## Stack
 
-- **Customer Features:**
-  - Browse products
-  - View product details
-  - Shopping cart
-  - Checkout with Cash on Delivery
-  - Order confirmation
+- **Framework:** Next.js 15 (App Router)
+- **Database:** MongoDB + Mongoose
+- **Payments:** Stripe Checkout
 
-- **Admin Features:**
-  - Product management (CRUD)
-  - Image upload for products
-  - Order management
-  - Order status updates
+## Setup
 
-## Tech Stack
+1. Install dependencies:
 
-- **Frontend:** React + Vite
-- **Backend:** Node.js + Express
-- **Database:** MongoDB
-- **Authentication:** Auth0 (Google OAuth for users, Admin role-based permissions)
-
-## Setup Instructions
-
-### Backend Setup
-
-1. Navigate to backend directory:
-```bash
-cd backend
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Create a `.env` file in the backend directory:
-```
-MONGODB_URI=mongodb://localhost:27017/ecommerce
-PORT=5000
-AUTH0_DOMAIN=your-domain.auth0.com
-AUTH0_CLIENT_ID=your_client_id
-AUTH0_AUDIENCE=your_client_id
+2. Copy environment variables:
+
+```bash
+cp .env.example .env
 ```
 
-4. Start MongoDB (make sure MongoDB is running on your system)
+3. Set `MONGODB_URI` and Stripe keys in `.env`.
 
-5. Start the backend server:
+4. Run the development server:
+
 ```bash
 npm run dev
 ```
 
-The backend will run on `
+Open [http://localhost:3000](http://localhost:3000).
 
-### Frontend Setup
-
-1. Navigate to frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create a `.env` file in the frontend directory:
-```
-VITE_API_URL=http://localhost:5000/api
-VITE_AUTH0_DOMAIN=your-domain.auth0.com
-VITE_AUTH0_CLIENT_ID=your_client_id
-VITE_AUTH0_REDIRECT_URI=http://localhost:3000/callback
-```
-
-4. Start the development server:
-```bash
-npm run dev
-```
-
-The frontend will run on `
-
-## Admin Setup
-
-Admin access is managed through Auth0. To set up an admin:
-
-1. Configure Auth0 with Google OAuth
-2. Create an Admin role in Auth0
-3. Assign the following permissions to the Admin role:
-   - `create:products`
-   - `update:products`
-   - `delete:products`
-   - `read:products`
-   - `update:users`
-   - `read:orders`
-   - `update:orders`
-4. Assign the Admin role to your Google account in Auth0
-
-See `GOOGLE_ADMIN_SETUP.md` for detailed instructions.
-
-## Project Structure
+## Project structure
 
 ```
-├── backend/
-│   ├── models/          # MongoDB models
-│   ├── routes/          # API routes
-│   ├── middleware/      # Auth middleware
-│   ├── uploads/         # Product images
-│   └── server.js        # Entry point
-│
-└── frontend/
-    ├── src/
-    │   ├── components/  # Reusable components
-    │   ├── pages/       # Page components
-    │   ├── utils/       # API utilities
-    │   └── App.jsx      # Main app component
-    └── vite.config.js   # Vite configuration
+app/           # Pages and API route handlers
+components/    # UI components
+lib/           # DB connection, models, API client, helpers
+public/        # Static assets
+styles/        # CSS
 ```
 
-## API Endpoints
+## API routes
 
-### Products
-- `GET /api/products` - Get all products
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create product (admin)
-- `PUT /api/products/:id` - Update product (admin)
-- `DELETE /api/products/:id` - Delete product (admin)
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/products` | GET, POST | List / create products |
+| `/api/products/:id` | GET, PUT, DELETE | Product CRUD |
+| `/api/orders` | GET | List orders (admin) |
+| `/api/orders/:id` | GET | Order details |
+| `/api/orders/:id/status` | PUT | Update order status |
+| `/api/stripe/create-checkout-session` | POST | Start Stripe checkout |
+| `/api/stripe/verify-payment/:orderId` | GET | Verify payment |
+| `/api/stripe/webhook` | POST | Stripe webhook |
+| `/api/health` | GET | Health check |
 
-### Orders
-- `POST /api/orders` - Create order
-- `GET /api/orders` - Get all orders (admin)
-- `GET /api/orders/:id` - Get single order (admin)
-- `PUT /api/orders/:id/status` - Update order status (admin)
+## Scripts
 
-### Users (Auth0)
-- `GET /api/users/me` - Get current user profile
-- `PUT /api/users/me` - Update user profile
-- `POST /api/users/sync` - Sync user from Auth0
-- `GET /api/users/me/orders` - Get user orders
-
-## License
-
-MIT
-
+- `npm run dev` — development server
+- `npm run build` — production build
+- `npm start` — run production server
